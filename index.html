@@ -3,9 +3,49 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>API Full Stack Project</title>
+    <title>GEOguezz - Geography Quiz</title>
+    <link rel="stylesheet" href="index.css" />
   </head>
   <body>
-    <!-- You code goes here-->
+    <header class="header">
+      <div class="header-container">
+        <h1 class="logo">GEOguezz</h1>
+        <nav class="nav">
+          <button class="nav-btn">Home</button>
+          <button class="nav-btn">Quiz/Challenge</button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="page">
+      <div class="page-content">
+        <h2>Welcome to GEOguezz</h2>
+        <p>Choose a quiz type below and get ready to test your knowledge on geography!</p>
+
+        <div class="quiz-options">
+          <section class="quiz-section country-section">
+            <h3>Country Quizzes</h3>
+            <p>Search for a country and take a quiz on info about population, capital city, etc.</p>
+            <input
+              type="text"
+              placeholder="Search for a country..."
+              class="search-input"
+            />
+          </section>
+
+          <section class="quiz-section general-section">
+            <h3>General Geography Quiz</h3>
+            <p>Answer a set of 20 geography questions about every country and try to ge the highest score you can!</p>
+            <button class="btn btn-primary">Start Quiz</button>
+          </section>
+
+          <section class="quiz-section challenge-section">
+            <h3>20-Minute Challenge</h3>
+            <p>Try to name as many countries as possible in 20 minutes. The challenge will show automatically on the next page.</p>
+            <button class="btn btn-primary">Start Challenge</button>
+          </section>
+        </div>
+      </div>
+    </main>
   </body>
 </html>
