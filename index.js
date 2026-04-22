@@ -16,19 +16,11 @@ let sessionData = {
 };
 
 // Load session data from localStorage
-const savedData = localStorage.getItem('geoquizSessionData');
-if (savedData) {
-  try {
-    sessionData = JSON.parse(savedData);
-  } catch (e) {
-    console.error('Error loading session data:', e);
-  }
-}
+const saved = localStorage.getItem('geoquizSessionData');
+if (saved) sessionData = JSON.parse(saved);
 
 // Function to save session data
-function saveSessionData() {
-  localStorage.setItem('geoquizSessionData', JSON.stringify(sessionData));
-}
+function saveData() { localStorage.setItem('geoquizSessionData', JSON.stringify(sessionData)); }
 
 const API_BASE = 'https://restcountries.com/v3.1';
 
@@ -44,11 +36,22 @@ async function initializeApp() {
 }
 
 function setupEventListeners() {
-  document.getElementById('country-search-input').addEventListener('keypress', handleCountrySearch);
-  document.getElementById('country-search-input-quiz').addEventListener('keypress', handleCountrySearchQuiz);
+  const handleSearch = (event) => {
+    if (event.key !== 'Enter') return;
+    const searchTerm = event.target.value.toLowerCase().trim();
+    if (!searchTerm) return;
+    switchTab('quiz');
+    const results = allCountries.filter(country => 
+      country.name.common.toLowerCase().includes(searchTerm) ||
+      country.name.official.toLowerCase().includes(searchTerm)
+    );
+    displaySearchResults(results, searchTerm);
+  };
+  document.getElementById('country-search-input').addEventListener('keypress', handleSearch);
+  document.getElementById('country-search-input-quiz').addEventListener('keypress', handleSearch);
   document.getElementById('start-general-quiz-btn').addEventListener('click', startGeneralQuiz);
   document.getElementById('start-general-quiz-btn-quiz').addEventListener('click', startGeneralQuizFromQuizTab);
-  document.getElementById('start-challenge-btn').addEventListener('click', () => switchTab('quiz'));
+  document.getElementById('start-challenge-btn').addEventListener('click', () => { switchTab('quiz'); startChallenge(); });
   document.getElementById('start-challenge-btn-quiz').addEventListener('click', startChallenge);
   document.getElementById('next-question-btn').addEventListener('click', nextCountryQuestion);
   document.getElementById('next-general-question-btn').addEventListener('click', nextGeneralQuestion);
@@ -89,35 +92,6 @@ function switchTab(tab) {
   }
 }
 
-function handleCountrySearch(event) {
-  if (event.key !== 'Enter') return;
-  
-  const searchTerm = event.target.value.toLowerCase().trim();
-  if (!searchTerm) return;
-  
-  switchTab('quiz');
-  const results = allCountries.filter(country => 
-    country.name.common.toLowerCase().includes(searchTerm) ||
-    country.name.official.toLowerCase().includes(searchTerm)
-  );
-  
-  displaySearchResults(results, searchTerm);
-}
-
-function handleCountrySearchQuiz(event) {
-  if (event.key !== 'Enter') return;
-  
-  const searchTerm = event.target.value.toLowerCase().trim();
-  if (!searchTerm) return;
-  
-  const results = allCountries.filter(country => 
-    country.name.common.toLowerCase().includes(searchTerm) ||
-    country.name.official.toLowerCase().includes(searchTerm)
-  );
-  
-  displaySearchResults(results, searchTerm);
-}
-
 function displaySearchResults(results, searchTerm) {
   if (results.length === 0) {
     alert(`No countries found matching "${searchTerm}".`);
@@ -130,14 +104,7 @@ function displaySearchResults(results, searchTerm) {
   results.forEach(country => {
     const card = document.createElement('div');
     card.className = 'country-card';
-    card.innerHTML = `
-      <img src="${country.flags.png}" alt="Flag of ${country.name.common}" class="country-flag" />
-      <h3>${country.name.common}</h3>
-      <p><strong>Capital:</strong> ${country.capital ? country.capital[0] : 'N/A'}</p>
-      <p><strong>Population:</strong> ${country.population.toLocaleString()}</p>
-      <p><strong>Region:</strong> ${country.region}</p>
-      <button class="btn btn-secondary take-quiz-btn" data-country="${country.name.common}">Take Quiz</button>
-    `;
+    card.innerHTML = `<img src="${country.flags.png}" alt="Flag of ${country.name.common}" class="country-flag" /><h3>${country.name.common}</h3><p><strong>Capital:</strong> ${country.capital ? country.capital[0] : 'N/A'}</p><p><strong>Population:</strong> ${country.population.toLocaleString()}</p><p><strong>Region:</strong> ${country.region}</p><button class="btn btn-secondary take-quiz-btn" data-country="${country.name.common}">Take Quiz</button>`;
     container.appendChild(card);
   });
   
@@ -281,33 +248,9 @@ function displayCountryQuestion(index) {
   const container = document.getElementById('question-container');
   
   if (question.type === 'flag') {
-    container.innerHTML = `
-      <div class="question">
-        <p>${question.text}</p>
-        <img src="${question.flagUrl}" alt="Country flag" class="question-flag" />
-        <div class="options">
-          ${question.options.map(option => `<button class="option-btn" data-answer="${option}">${option}</button>`).join('')}
-        </div>
-      </div>
-    `;
-  } else if (question.type === 'population') {
-    container.innerHTML = `
-      <div class="question">
-        <p>${question.text}</p>
-        <div class="options">
-          ${question.options.map(option => `<button class="option-btn" data-answer="${option}">${option}</button>`).join('')}
-        </div>
-      </div>
-    `;
+    container.innerHTML = `<div class="question"><p>${question.text}</p><img src="${question.flagUrl}" alt="Country flag" class="question-flag" /><div class="options">${question.options.map(option => `<button class="option-btn" data-answer="${option}">${option}</button>`).join('')}</div></div>`;
   } else {
-    container.innerHTML = `
-      <div class="question">
-        <p>${question.text}</p>
-        <div class="options">
-          ${question.options.map(option => `<button class="option-btn" data-answer="${option}">${option}</button>`).join('')}
-        </div>
-      </div>
-    `;
+    container.innerHTML = `<div class="question"><p>${question.text}</p><div class="options">${question.options.map(option => `<button class="option-btn" data-answer="${option}">${option}</button>`).join('')}</div></div>`;
   }
   
   document.querySelectorAll('.option-btn').forEach(btn => {
@@ -362,7 +305,7 @@ function finishCountryQuiz() {
   quizResults.score = score;
   quizResults.totalQuestions = 5;
   sessionData.countryQuizzes.push(quizResults);
-  saveSessionData();
+  saveData();
   
   document.getElementById('final-score').textContent = `Your Score: ${score}/5`;
   const finishBtn = document.getElementById('finish-quiz-btn');
@@ -437,24 +380,9 @@ function displayGeneralQuestion(index) {
   const container = document.getElementById('general-question-container');
   
   if (question.type === 'flag') {
-    container.innerHTML = `
-      <div class="question">
-        <p>${question.text}</p>
-        <img src="${question.flagUrl}" alt="Country flag" class="question-flag" />
-        <div class="options">
-          ${question.options.map(option => `<button class="option-btn" data-answer="${option}">${option}</button>`).join('')}
-        </div>
-      </div>
-    `;
+    container.innerHTML = `<div class="question"><p>${question.text}</p><img src="${question.flagUrl}" alt="Country flag" class="question-flag" /><div class="options">${question.options.map(option => `<button class="option-btn" data-answer="${option}">${option}</button>`).join('')}</div></div>`;
   } else {
-    container.innerHTML = `
-      <div class="question">
-        <p>${question.text}</p>
-        <div class="options">
-          ${question.options.map(option => `<button class="option-btn" data-answer="${option}">${option}</button>`).join('')}
-        </div>
-      </div>
-    `;
+    container.innerHTML = `<div class="question"><p>${question.text}</p><div class="options">${question.options.map(option => `<button class="option-btn" data-answer="${option}">${option}</button>`).join('')}</div></div>`;
   }
   
   document.querySelectorAll('#general-question-container .option-btn').forEach(btn => {
@@ -500,7 +428,7 @@ function finishGeneralQuiz() {
   quizResults.score = score;
   quizResults.totalQuestions = 20;
   sessionData.generalQuizzes.push(quizResults);
-  saveSessionData();
+  saveData();
   
   document.getElementById('general-final-score').textContent = `Your Score: ${score}/20`;
   const finishBtn = document.getElementById('finish-general-quiz-btn');
@@ -578,7 +506,7 @@ function finishChallenge() {
   };
   
   sessionData.challenges.push(challengeResults);
-  saveSessionData();
+  saveData();
   
   document.getElementById('challenge-final-score').textContent = `Countries Named: ${challengeNamedCountries.size}`;
   showQuizInnerPage('challenge-results-page-inner');
@@ -624,18 +552,9 @@ function displayCountryQuizStats() {
   
   let html = '<h3>Country Quiz Results</h3>';
   sessionData.countryQuizzes.forEach((quiz, index) => {
-    html += `<div class="quiz-result">
-      <h4>Quiz ${index + 1} - ${quiz.country} (${quiz.timestamp})</h4>
-      <p>Score: ${quiz.score}/5</p>
-      <details>
-        <summary>View Details</summary>
-        <ul>`;
+    html += `<div class="quiz-result"><h4>Quiz ${index + 1} - ${quiz.country} (${quiz.timestamp})</h4><p>Score: ${quiz.score}/5</p><details><summary>View Details</summary><ul>`;
     quiz.questions.forEach(q => {
-      html += `<li class="${q.isCorrect ? 'correct' : 'incorrect'}">
-        ${q.question}<br>
-        Your answer: ${q.userAnswer}<br>
-        Correct answer: ${q.correctAnswer}
-      </li>`;
+      html += `<li class="${q.isCorrect ? 'correct' : 'incorrect'}">${q.question}<br>Your answer: ${q.userAnswer}<br>Correct answer: ${q.correctAnswer}</li>`;
     });
     html += '</ul></details></div>';
   });
@@ -654,18 +573,9 @@ function displayGeneralQuizStats() {
   
   let html = '<h3>General Quiz Results</h3>';
   sessionData.generalQuizzes.forEach((quiz, index) => {
-    html += `<div class="quiz-result">
-      <h4>Quiz ${index + 1} (${quiz.timestamp})</h4>
-      <p>Score: ${quiz.score}/20</p>
-      <details>
-        <summary>View Details</summary>`;
-    html += '<ul>';
+    html += `<div class="quiz-result"><h4>Quiz ${index + 1} (${quiz.timestamp})</h4><p>Score: ${quiz.score}/20</p><details><summary>View Details</summary><ul>`;
     quiz.questions.forEach(q => {
-      html += `<li class="${q.isCorrect ? 'correct' : 'incorrect'}">
-        ${q.question}<br>
-        Your answer: ${q.userAnswer}<br>
-        Correct answer: ${q.correctAnswer}
-      </li>`;
+      html += `<li class="${q.isCorrect ? 'correct' : 'incorrect'}">${q.question}<br>Your answer: ${q.userAnswer}<br>Correct answer: ${q.correctAnswer}</li>`;
     });
     html += '</ul></details></div>';
   });
@@ -684,13 +594,7 @@ function displayChallengeStats() {
   
   let html = '<h3>Challenge Results</h3>';
   sessionData.challenges.forEach((challenge, index) => {
-    html += `<div class="quiz-result">
-      <h4>Challenge ${index + 1} (${challenge.timestamp})</h4>
-      <p>Countries Named: ${challenge.countriesGuessed}</p>
-      <details>
-        <summary>View Details</summary>
-        <p><strong>Missed Countries:</strong></p>
-        <ul>`;
+    html += `<div class="quiz-result"><h4>Challenge ${index + 1} (${challenge.timestamp})</h4><p>Countries Named: ${challenge.countriesGuessed}</p><details><summary>View Details</summary><p><strong>Missed Countries:</strong></p><ul>`;
     challenge.missedCountries.forEach(country => {
       html += `<li>${country.name.common}</li>`;
     });
@@ -700,5 +604,4 @@ function displayChallengeStats() {
   statsDiv.innerHTML = html;
 }
 
-// Initialize the app when the page loads
 document.addEventListener('DOMContentLoaded', initializeApp);
