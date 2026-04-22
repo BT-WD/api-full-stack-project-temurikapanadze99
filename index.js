@@ -84,12 +84,12 @@ function switchTab(tab) {
     document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
     document.getElementById('quiz-page').classList.remove('hidden');
     showQuizOptions();
-  } else if (tab === 'data') {
+  } /* else if (tab === 'data') {
     currentTab = 'data';
     document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
     document.getElementById('data-page').classList.remove('hidden');
     displaySessionData();
-  }
+  } */
 }
 
 function displaySearchResults(results, searchTerm) {
@@ -535,7 +535,7 @@ function retakeGeneralQuiz() {
   startGeneralQuizFromQuizTab();
 }
 
-function displaySessionData() {
+/* function displaySessionData() {
   displayCountryQuizStats();
   displayGeneralQuizStats();
   displayChallengeStats();
@@ -602,6 +602,6 @@ function displayChallengeStats() {
   });
   
   statsDiv.innerHTML = html;
-}
+} */
 
 document.addEventListener('DOMContentLoaded', initializeApp);
