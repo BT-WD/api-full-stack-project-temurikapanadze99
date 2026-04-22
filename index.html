@@ -11,41 +11,175 @@
       <div class="header-container">
         <h1 class="logo">GEOguezz</h1>
         <nav class="nav">
-          <button class="nav-btn">Home</button>
-          <button class="nav-btn">Quiz/Challenge</button>
+          <button class="nav-btn home-nav-btn active" data-tab="home">Home</button>
+          <button class="nav-btn data-nav-btn" data-tab="data">Current Data</button>
         </nav>
       </div>
     </header>
 
     <main class="page">
-      <div class="page-content">
-        <h2>Welcome to GEOguezz</h2>
-        <p>Choose a quiz type below and get ready to test your knowledge on geography!</p>
+      <div id="home-page" class="page-view tab-view">
+        <div class="page-content">
+          <h2>Welcome to GEOguezz</h2>
+          <p>Choose a quiz type below and get ready to test your knowledge on geography!</p>
 
-        <div class="quiz-options">
-          <section class="quiz-section country-section">
-            <h3>Country Quizzes</h3>
-            <p>Search for a country and take a quiz on info about population, capital city, etc.</p>
-            <input
-              type="text"
-              placeholder="Search for a country..."
-              class="search-input"
-            />
-          </section>
+          <div class="quiz-options">
+            <section class="quiz-section country-section">
+              <h3>Country Quizzes</h3>
+              <p>Search for a country and take a quiz on info about population, capital city, etc.</p>
+              <input
+                type="text"
+                placeholder="Search for a country..."
+                class="search-input"
+                id="country-search-input"
+              />
+            </section>
 
-          <section class="quiz-section general-section">
-            <h3>General Geography Quiz</h3>
-            <p>Answer a set of 20 geography questions about every country and try to ge the highest score you can!</p>
-            <button class="btn btn-primary">Start Quiz</button>
-          </section>
+            <section class="quiz-section general-section">
+              <h3>General Geography Quiz</h3>
+              <p>Answer a set of 20 geography questions about every country and try to get the highest score you can!</p>
+              <button class="btn btn-primary" id="start-general-quiz-btn">Start Quiz</button>
+            </section>
 
-          <section class="quiz-section challenge-section">
-            <h3>20-Minute Challenge</h3>
-            <p>Try to name as many countries as possible in 20 minutes. The challenge will show automatically on the next page.</p>
-            <button class="btn btn-primary">Start Challenge</button>
-          </section>
+            <section class="quiz-section challenge-section">
+              <h3>30-Minute Challenge</h3>
+              <p>Try to name as many countries as possible in 30 minutes. The challenge will show automatically on the next page.</p>
+              <button class="btn btn-primary" id="start-challenge-btn">Start Challenge</button>
+            </section>
+          </div>
+        </div>
+      </div>
+
+      <div id="quiz-page" class="page-view tab-view hidden">
+        <div id="search-results-page-inner" class="quiz-inner-page hidden">
+          <div class="page-content">
+            <h2>Search Results</h2>
+            <div id="search-results-container" class="search-results-grid"></div>
+            <button class="btn btn-primary" id="back-to-quiz-options-btn">Back to Quiz Options</button>
+          </div>
+        </div>
+
+        <div id="country-quiz-page-inner" class="quiz-inner-page hidden">
+          <div class="page-content">
+            <div class="quiz-progress">
+              <span id="question-counter">Question 1 of 5</span>
+              <div class="progress-bar">
+                <div id="progress-fill" class="progress-fill"></div>
+              </div>
+            </div>
+            <h2 id="quiz-title">Country Quiz</h2>
+            <div id="question-container" class="question-container"></div>
+            <button class="btn btn-primary" id="next-question-btn">Next Question</button>
+          </div>
+        </div>
+
+        <div id="country-quiz-results-page-inner" class="quiz-inner-page hidden">
+          <div class="page-content">
+            <h2>Quiz Complete!</h2>
+            <div class="results-container">
+              <p id="final-score">Your Score: 0/5</p>
+              <button class="btn btn-primary" id="retake-quiz-btn">Retake Quiz</button>
+              <button class="btn btn-primary" id="back-home-from-results-btn">Back to Home</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="general-quiz-page-inner" class="quiz-inner-page hidden">
+          <div class="page-content">
+            <div class="quiz-progress">
+              <span id="general-question-counter">Question 1 of 20</span>
+              <div class="progress-bar">
+                <div id="general-progress-fill" class="progress-fill"></div>
+              </div>
+            </div>
+            <h2>General Geography Quiz</h2>
+            <div id="general-question-container" class="question-container"></div>
+            <button class="btn btn-primary" id="next-general-question-btn">Next Question</button>
+          </div>
+        </div>
+
+        <div id="general-quiz-results-page-inner" class="quiz-inner-page hidden">
+          <div class="page-content">
+            <h2>Quiz Complete!</h2>
+            <div class="results-container">
+              <p id="general-final-score">Your Score: 0/20</p>
+              <button class="btn btn-primary" id="retake-general-quiz-btn">Retake Quiz</button>
+              <button class="btn btn-primary" id="back-home-from-general-results-btn">Back to Home</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="challenge-page-inner" class="quiz-inner-page hidden">
+          <div class="page-content">
+            <div class="challenge-header">
+              <h2>30-Minute Challenge</h2>
+              <div class="challenge-info">
+                <span id="timer">30:00</span>
+                <span id="country-count">Countries: 0</span>
+              </div>
+            </div>
+            <input type="text" id="challenge-input" placeholder="Type a country name..." class="challenge-input" />
+            <div id="challenge-countries" class="challenge-countries-list"></div>
+            <button class="btn btn-primary" id="finish-challenge-btn">Finish Early</button>
+          </div>
+        </div>
+
+        <div id="challenge-results-page-inner" class="quiz-inner-page hidden">
+          <div class="page-content">
+            <h2>Challenge Complete!</h2>
+            <div class="results-container">
+              <p id="challenge-final-score">Countries Named: 0</p>
+              <button class="btn btn-primary" id="start-another-challenge-btn">Try Again</button>
+              <button class="btn btn-primary" id="back-home-from-challenge-btn">Back to Home</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="quiz-options-page-inner" class="quiz-inner-page">
+          <div class="page-content">
+            <h2>Quiz & Challenge Options</h2>
+            <p>Choose a quiz type below and test your geography knowledge!</p>
+
+            <div class="quiz-options">
+              <section class="quiz-section country-section">
+                <h3>Country Quizzes</h3>
+                <p>Search for a country and take a quiz on info about population, capital city, etc.</p>
+                <input
+                  type="text"
+                  placeholder="Search for a country..."
+                  class="search-input"
+                  id="country-search-input-quiz"
+                />
+              </section>
+
+              <section class="quiz-section general-section">
+                <h3>General Geography Quiz</h3>
+                <p>Answer a set of 20 geography questions about every country and try to get the highest score you can!</p>
+                <button class="btn btn-primary" id="start-general-quiz-btn-quiz">Start Quiz</button>
+              </section>
+
+              <section class="quiz-section challenge-section">
+                <h3>30-Minute Challenge</h3>
+                <p>Try to name as many countries as possible in 30 minutes.</p>
+                <button class="btn btn-primary" id="start-challenge-btn-quiz">Start Challenge</button>
+              </section>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="data-page" class="page-view tab-view hidden">
+        <div class="page-content">
+          <h2>Session Data</h2>
+          <p>View your quiz results and challenge scores from this session.</p>
+          
+          <div id="country-quiz-stats" class="session-stats"></div>
+          <div id="general-quiz-stats" class="session-stats"></div>
+          <div id="challenge-stats" class="session-stats"></div>
         </div>
       </div>
     </main>
+
+    <script src="index.js"></script>
   </body>
 </html>
