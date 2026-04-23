@@ -67,4 +67,5 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-
 
 .correct { color: var(--dark-green); }
 .incorrect { color: #d32f2f; } 
+
 @media (max-width: 768px) { .header-container { flex-direction: column; gap: 16px; } .page { padding: 24px 16px; } }
