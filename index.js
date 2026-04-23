@@ -21,6 +21,7 @@ async function initializeApp() {
   }
 }
 
+
 function setupEventListeners() {
   const searchHandler = e => {
     if (e.key !== 'Enter') return;
