@@ -84,8 +84,12 @@ function switchTab(tab) {
     document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
     document.getElementById('quiz-page').classList.remove('hidden');
     showQuizOptions();
-  } 
-}
+  } else if (tab === 'data') {
+    currentTab = 'data';
+    document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
+    document.getElementById('data-page').classList.remove('hidden');
+    displaySessionData();
+  }
 
 function displaySearchResults(results, searchTerm) {
   if (results.length === 0) {
@@ -528,6 +532,75 @@ function retakeCountryQuiz() {
 
 function retakeGeneralQuiz() {
   startGeneralQuizFromQuizTab();
+}
+
+function displaySessionData() {
+  displayCountryQuizStats();
+  displayGeneralQuizStats();
+  displayChallengeStats();
+}
+
+function displayCountryQuizStats() {
+  const statsDiv = document.getElementById('country-quiz-stats');
+  if (!statsDiv) return;
+  
+  if (sessionData.countryQuizzes.length === 0) {
+    statsDiv.innerHTML = '<p>No country quizzes completed yet.</p>';
+    return;
+  }
+  
+  let html = '<h3>Country Quiz Results</h3>';
+  sessionData.countryQuizzes.forEach((quiz, index) => {
+    html += `<div class="quiz-result"><h4>Quiz ${index + 1} - ${quiz.country} (${quiz.timestamp})</h4><p>Score: ${quiz.score}/5</p><details><summary>View Details</summary><ul>`;
+    quiz.questions.forEach(q => {
+      html += `<li class="${q.isCorrect ? 'correct' : 'incorrect'}">${q.question}<br>Your answer: ${q.userAnswer}<br>Correct answer: ${q.correctAnswer}</li>`;
+    });
+    html += '</ul></details></div>';
+  });
+  
+  statsDiv.innerHTML = html;
+}
+
+function displayGeneralQuizStats() {
+  const statsDiv = document.getElementById('general-quiz-stats');
+  if (!statsDiv) return;
+  
+  if (sessionData.generalQuizzes.length === 0) {
+    statsDiv.innerHTML = '<p>No general quizzes completed yet.</p>';
+    return;
+  }
+  
+  let html = '<h3>General Quiz Results</h3>';
+  sessionData.generalQuizzes.forEach((quiz, index) => {
+    html += `<div class="quiz-result"><h4>Quiz ${index + 1} (${quiz.timestamp})</h4><p>Score: ${quiz.score}/20</p><details><summary>View Details</summary><ul>`;
+    quiz.questions.forEach(q => {
+      html += `<li class="${q.isCorrect ? 'correct' : 'incorrect'}">${q.question}<br>Your answer: ${q.userAnswer}<br>Correct answer: ${q.correctAnswer}</li>`;
+    });
+    html += '</ul></details></div>';
+  });
+  
+  statsDiv.innerHTML = html;
+}
+
+function displayChallengeStats() {
+  const statsDiv = document.getElementById('challenge-stats');
+  if (!statsDiv) return;
+  
+  if (sessionData.challenges.length === 0) {
+    statsDiv.innerHTML = '<p>No challenges completed yet.</p>';
+    return;
+  }
+  
+  let html = '<h3>Challenge Results</h3>';
+  sessionData.challenges.forEach((challenge, index) => {
+    html += `<div class="quiz-result"><h4>Challenge ${index + 1} (${challenge.timestamp})</h4><p>Countries Named: ${challenge.countriesGuessed}</p><details><summary>View Details</summary><p><strong>Missed Countries:</strong></p><ul>`;
+    challenge.missedCountries.forEach(country => {
+      html += `<li>${country.name.common}</li>`;
+    });
+    html += '</ul></details></div>';
+  });
+  
+  statsDiv.innerHTML = html;
 }
 
 document.addEventListener('DOMContentLoaded', initializeApp);
